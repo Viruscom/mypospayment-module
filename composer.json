@@ -1,0 +1,27 @@
+{
+    "name": "iwish/mypospayment-module",
+    "description": "",
+    "authors": [
+        {
+            "name": "test",
+            "email": "test@test.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\MyPosPayment\\": ""
+        }
+    },
+    "require": {
+        "developermypos/mypos-checkout-sdk": "^1.3"
+    },
+    "type": "laravel-module"
+}

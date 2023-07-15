@@ -1,0 +1,13 @@
+{
+    "name": "MyPosPayment",
+    "alias": "mypospayment",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\MyPosPayment\\Providers\\MyPosPaymentServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
