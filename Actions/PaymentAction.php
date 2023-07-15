@@ -28,8 +28,9 @@ class PaymentAction
                 'phone'        => $order->phone,
                 'countryCode3' => $currency,
                 'address'      => $order->street . ' ' . $order->street_number,
-                'city'         => $order->city->name,
-                'zip'          => $order->zip_code,
+
+                'city' => $order->city->name,
+                'zip'  => $order->zip_code,
             ];
 
             $cartItems = [];
@@ -47,3 +48,4 @@ class PaymentAction
         }
     }
 }
+

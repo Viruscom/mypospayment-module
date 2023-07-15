@@ -128,6 +128,7 @@ class MyPos
     /**
      * @return string
      */
+
     public function getCnfVersion(): string
     {
         return $this->cnfVersion;
@@ -251,6 +252,7 @@ class MyPos
     //         echo $ex->getMessage();
     //     }
     // }
+
     /**
      * @return mixed
      */
