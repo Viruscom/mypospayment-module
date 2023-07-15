@@ -9,7 +9,7 @@ use Modules\MyPosPayment\Entities\MyPos;
 class PaymentAction
 {
  
-    public function initPayment(Order $order)
+    public static function initPayment(Order $order)
     {
         if(empty($order)){
             return ['result'=>false, 'error'=>'Invalid order'];

@@ -55,19 +55,19 @@ class MyPos
 // J4sHeQc=
 // -----END CERTIFICATE-----';
 
-    function __construct($lang, $currency) throws \Exception {
+    function __construct($lang, $currency) {
         $this->lang = $lang;
         $this->currency = $currency;
         $this->loadParams();
     }
 
-    public function loadParams() throws \Exception{
+    public function loadParams(){
         $payment = Payment::where('type','mypos')->get()->first();
         if(is_null($payment)){
             throw new \Exception(trans('payment.no_mypos_params'));
         }
 
-        $data = json_decode($payment->data);
+        $data = json_decode($payment->data, true);
         if(!isset($data['environment']) || !isset($data['environment_url'])
             || !isset($data['shop_id']) || !isset($data['wallet'])
             || !isset($data['key_index']) || !isset($data['version'])
@@ -282,7 +282,7 @@ class MyPos
         $this->setCart($cart);
     }
 
-    public function makePurchase($order) throws IPC_Exception
+    public function makePurchase($order)
     {
         $purchase = new Purchase($this->getCnf());
         $purchase->setUrlCancel(route('mypospayment.cancel', ['languageSlug' => $this->lang, 'orderId' => $order->id]));
