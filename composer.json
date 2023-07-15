@@ -1,10 +1,10 @@
 {
-    "name": "nwidart/mypospayment",
+    "name": "iwish/mypospayment-module",
     "description": "",
     "authors": [
         {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
+            "name": "test",
+            "email": "test@test.com"
         }
     ],
     "extra": {
@@ -22,5 +22,6 @@
     },
     "require": {
         "developermypos/mypos-checkout-sdk": "^1.3"
-    }
+    },
+    "type": "laravel-module"
 }
