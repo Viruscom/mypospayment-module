@@ -1,115 +1,120 @@
 <?php
 
-    namespace Modules\MyPosPayment\Providers;
+namespace Modules\MyPosPayment\Providers;
 
-    use Config;
-    use Illuminate\Database\Eloquent\Factory;
-    use Illuminate\Support\ServiceProvider;
-    use Modules\Mypospayment\Http\Middleware\IgnoreCsrfToken;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Factory;
+use Modules\Mypospayment\Http\Middleware\IgnoreCsrfToken;
 
-    class MyPosPaymentServiceProvider extends ServiceProvider
+class MyPosPaymentServiceProvider extends ServiceProvider
+{
+    /**
+     * @var string $moduleName
+     */
+    protected $moduleName = 'MyPosPayment';
+
+    /**
+     * @var string $moduleNameLower
+     */
+    protected $moduleNameLower = 'mypospayment';
+
+    /**
+     * Boot the application events.
+     *
+     * @return void
+     */
+    public function boot()
     {
-        /**
-         * @var string $moduleName
-         */
-        protected $moduleName = 'MyPosPayment';
+        $this->registerTranslations();
+        $this->registerConfig();
+        $this->registerViews();
+        $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
+        $this->registerMiddleware();
+    }
 
-        /**
-         * @var string $moduleNameLower
-         */
-        protected $moduleNameLower = 'mypospayment';
+    protected function registerMiddleware()
+    {
+        $router = $this->app['router'];
+        $router->aliasMiddleware('ignoreCsrf', IgnoreCsrfToken::class);
+    }
 
-        /**
-         * Boot the application events.
-         *
-         * @return void
-         */
-        public function boot()
-        {
-            $this->registerTranslations();
-            $this->registerConfig();
-            $this->registerViews();
-            $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
-            $this->registerMiddleware();
-        }
-        /**
-         * Register translations.
-         *
-         * @return void
-         */
-        public function registerTranslations()
-        {
-            $langPath = resource_path('lang/modules/' . $this->moduleNameLower);
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->register(RouteServiceProvider::class);
+    }
 
-            if (is_dir($langPath)) {
-                $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
-            } else {
-                $this->loadTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
-            }
-        }
-        /**
-         * Register config.
-         *
-         * @return void
-         */
-        protected function registerConfig()
-        {
-            $this->publishes([
-                                 module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php'),
-                             ], 'config');
-            $this->mergeConfigFrom(
-                module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower
-            );
-        }
-        /**
-         * Register views.
-         *
-         * @return void
-         */
-        public function registerViews()
-        {
-            $viewPath = resource_path('views/modules/' . $this->moduleNameLower);
+    /**
+     * Register config.
+     *
+     * @return void
+     */
+    protected function registerConfig()
+    {
+        $this->publishes([
+            module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php'),
+        ], 'config');
+        $this->mergeConfigFrom(
+            module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower
+        );
+    }
 
-            $sourcePath = module_path($this->moduleName, 'Resources/views');
+    /**
+     * Register views.
+     *
+     * @return void
+     */
+    public function registerViews()
+    {
+        $viewPath = resource_path('views/modules/' . $this->moduleNameLower);
 
-            $this->publishes([
-                                 $sourcePath => $viewPath
-                             ], ['views', $this->moduleNameLower . '-module-views']);
+        $sourcePath = module_path($this->moduleName, 'Resources/views');
 
-            $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
-        }
-        private function getPublishableViewPaths(): array
-        {
-            $paths = [];
-            foreach (Config::get('view.paths') as $path) {
-                if (is_dir($path . '/modules/' . $this->moduleNameLower)) {
-                    $paths[] = $path . '/modules/' . $this->moduleNameLower;
-                }
-            }
+        $this->publishes([
+            $sourcePath => $viewPath
+        ], ['views', $this->moduleNameLower . '-module-views']);
 
-            return $paths;
-        }
-        protected function registerMiddleware()
-        {
-            $router = $this->app['router'];
-            $router->aliasMiddleware('ignoreCsrf', IgnoreCsrfToken::class);
-        }
-        /**
-         * Register the service provider.
-         *
-         * @return void
-         */
-        public function register()
-        {
-            $this->app->register(RouteServiceProvider::class);
-        }
-        /**
-         * Get the services provided by the provider.
-         *
-         * @return array
-         */
-        public function provides()
-        {
-            return [];
+        $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
+    }
+
+    /**
+     * Register translations.
+     *
+     * @return void
+     */
+    public function registerTranslations()
+    {
+        $langPath = resource_path('lang/modules/' . $this->moduleNameLower);
+
+        if (is_dir($langPath)) {
+            $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
+        } else {
+            $this->loadTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
         }
     }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [];
+    }
+
+    private function getPublishableViewPaths(): array
+    {
+        $paths = [];
+        foreach (\Config::get('view.paths') as $path) {
+            if (is_dir($path . '/modules/' . $this->moduleNameLower)) {
+                $paths[] = $path . '/modules/' . $this->moduleNameLower;
+            }
+        }
+        return $paths;
+    }
+}

@@ -1,5 +1,4 @@
 <?php
-
     namespace Modules\Mypospayment\Http\Middleware;
 
     use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as BaseVerifier;
@@ -13,5 +12,8 @@
          */
         protected $except = [
             'mypospayment/notify',
+            'mypospayment/cancel',
+            'mypospayment/success',
         ];
+
     }

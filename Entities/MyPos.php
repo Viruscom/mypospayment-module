@@ -7,6 +7,7 @@
     use Mypos\IPC\Cart;
     use Mypos\IPC\Config;
     use Mypos\IPC\Customer;
+    use Mypos\IPC\IPC_Exception;
     use Mypos\IPC\Purchase;
 
     class MyPos
@@ -25,12 +26,14 @@
         private   $purchase;
         private   $lang;
         private   $currency;
+
         function __construct($lang, $currency)
         {
             $this->lang     = $lang;
             $this->currency = $currency;
             $this->loadParams();
         }
+
         public function loadParams()
         {
             $payment = Payment::where('type', 'mypos')->get()->first();
@@ -52,8 +55,12 @@
             $this->cnfWallet      = $data['wallet'];
             $this->cnfVersion     = $data['version'];
             $this->cnfKeyIndex    = $data['key_index'];
-            $this->privateKey     = $this->trimValue($data['private_key']);
-            $this->publicKey      = $this->trimValue($data['public_key']);
+            $this->privateKey     = $data['private_key']; //$this->trimValue($data['private_key']);
+            $this->publicKey      = $data['public_key']; //$this->trimValue($data['public_key']);
+        }
+        private function trimValue($value): string
+        {
+            return trim($value);
         }
         public function setConfig()
         {
@@ -128,7 +135,6 @@
         }
         public function createCustomer($array): void
         {
-
             $customer = new Customer();
             $customer->setFirstName($array['firstName']);
             $customer->setLastName($array['lastName']);
@@ -158,13 +164,12 @@
             $purchase->setUrlNotify(route('mypospayment.notify', ['languageSlug' => $this->lang]));
             $purchase->setOrderID($order->uid); //Some unique ID
             $purchase->setCurrency($this->currency);
-            //        $purchase->setNote('Some note'); //Not required
             $purchase->setCustomer($this->getCustomer());
             $purchase->setCart($this->getCart());
             $purchase->setCardTokenRequest(Purchase::CARD_TOKEN_REQUEST_PAY_AND_STORE);
             $purchase->setPaymentParametersRequired(Purchase::PURCHASE_TYPE_FULL);
             $purchase->setPaymentMethod(Purchase::PAYMENT_METHOD_BOTH);
-            //        $purchase->process();
+
             try {
                 $purchase->process();
             } catch (IPC_Exception $ex) {
@@ -178,59 +183,6 @@
         {
             return $this->cnf;
         }
-
-        // public function initMyPos()
-        // {
-
-        //     $cnf = new Config();
-        //     $cnf->setIpcURL(array_key_exists($this->environment, $this->environmentUrl) ? $this->environmentUrl[$this->environment] : $this->environmentUrl['TEST']);
-        //     $cnf->setLang('en');
-        //     $cnf->setPrivateKey($this->privateKey);
-        //     $cnf->setAPIPublicKey($this->publicKey);
-        //     $cnf->setKeyIndex($this->getCnfKeyIndex());
-        //     $cnf->setSid($this->getCnfShopId());
-        //     $cnf->setVersion($this->getCnfVersion());
-        //     $cnf->setWallet($this->getCnfWallet());
-
-        //     $this->setCnf($cnf);
-
-        //     $customer = new Customer();
-        //     $customer->setFirstName('John');
-        //     $customer->setLastName('Smith');
-        //     $customer->setEmail('demo@demo.demo');
-        //     $customer->setPhone('+359889629134');
-        //     $customer->setCountry('BGR');
-        //     $customer->setAddress('Business Park Varna');
-        //     $customer->setCity('Varna');
-        //     $customer->setZip('9000');
-
-        //     $cart = new Cart;
-        //     $cart->add('Some Book', 1, 9.99); //name, quantity, price
-        //     $cart->add('Some other book', 1, 4.56);
-        //     $cart->add('Discount', 1, -2.05);
-
-        //     $orderId  = random_int(1, 87987878978978);
-        //     $purchase = new Purchase($cnf);
-        //     $purchase->setUrlCancel(route('my-pos.cancel', ['languageSlug' => 'bg']));
-        //     $purchase->setUrlOk(route('my-pos.success', ['languageSlug' => 'bg']));
-        //     $purchase->setUrlNotify(route('my-pos.notify', ['languageSlug' => 'bg']));
-        //     $purchase->setOrderID($orderId); //Some unique ID
-        //     $purchase->setCurrency('EUR');
-        //     $purchase->setNote('Some note'); //Not required
-        //     $purchase->setCustomer($customer);
-        //     $purchase->setCart($cart);
-        //     $purchase->getFormParameters();
-
-        //     $purchase->setCardTokenRequest(Purchase::CARD_TOKEN_REQUEST_PAY_AND_STORE);
-        //     $purchase->setPaymentParametersRequired(Purchase::PURCHASE_TYPE_FULL);
-        //     $purchase->setPaymentMethod(Purchase::PAYMENT_METHOD_BOTH);
-
-        //     try {
-        //         $purchase->process();
-        //     } catch (IPC_Exception $ex) {
-        //         echo $ex->getMessage();
-        //     }
-        // }
         /**
          * @param mixed $cnf
          */
@@ -265,9 +217,5 @@
         public function setCart($cart): void
         {
             $this->cart = $cart;
-        }
-        private function trimValue($value): string
-        {
-            return trim($value);
         }
     }

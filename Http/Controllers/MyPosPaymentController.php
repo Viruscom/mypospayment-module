@@ -11,6 +11,9 @@ class MyPosPaymentController extends Controller
     public function success($languageSlug, $orderId)
     {
         $order = Order::where('uid', $orderId)->first();
+        if (is_null($order)) {
+            return abort(404);
+        }
         $order->update(['status_id' => Order::PAYMENT_PAID, 'paid_at' => Carbon::now()]);
 
         return view('mypospayment::completed', compact('order'));
@@ -19,6 +22,9 @@ class MyPosPaymentController extends Controller
     public function cancel($languageSlug, $orderId)
     {
         $order = Order::where('uid', $orderId)->first();
+        if (is_null($order)) {
+            return abort(404);
+        }
         $order->update(['status_id' => Order::PAYMENT_CANCELED, 'paid_at' => null]);
 
         return view('mypospayment::canceled');

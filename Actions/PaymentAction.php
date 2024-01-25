@@ -39,9 +39,9 @@ class PaymentAction
                 array_push($cartItems, $cartItem);
             }
 
+            $payment->setConfig();
             $payment->createCustomer($customer);
             $payment->createCart($cartItems);
-            $payment->setConfig();
             $payment->makePurchase($order);
         } catch (Exception $e) {
             return ['result' => false, 'error' => $e->getMessage()];
