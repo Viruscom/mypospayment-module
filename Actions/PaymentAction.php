@@ -38,6 +38,8 @@
                     $cartItem = ['name' => $orderProduct->product->title, 'quantity' => $orderProduct->product_quantity, 'price' => $orderProduct->vat_applied_discounted_price];
                     array_push($cartItems, $cartItem);
                 }
+                $cartItem = ['name' => 'Доставка', 'quantity' => 1, 'price' => $order->total_free_delivery ? 0 : (float)Order::FIXED_DELIVERY_PRICE];
+                array_push($cartItems, $cartItem);
 
                 $payment->setConfig();
                 $payment->createCustomer($customer);
