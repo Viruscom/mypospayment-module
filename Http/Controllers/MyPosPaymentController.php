@@ -27,7 +27,7 @@
             }
             $order->update(['payment_status' => Order::PAYMENT_CANCELED, 'paid_at' => null]);
 
-            return view('mypospayment::canceled');
+            return redirect(route('basket.order.canceled_payment', ['id' => $order->id]))->with('success', __('Successful update'));
         }
 
         public function notify()

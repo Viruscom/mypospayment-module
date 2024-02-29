@@ -16,6 +16,6 @@
 
     Route::prefix('mypospayment')->group(function () {
         Route::post('/notify', [MyPosPaymentController::class, 'notify'])->name('mypospayment.notify');
-        Route::post('/{orderId}/cancel', [MyPosPaymentController::class, 'cancel'])->name('mypospayment.cancel');
+        Route::post('/{languageSlug}/{orderId}/cancel', [MyPosPaymentController::class, 'cancel'])->name('mypospayment.cancel');
         Route::post('/{languageSlug}/{orderId}/success', [MyPosPaymentController::class, 'success'])->name('mypospayment.success');
     });
